@@ -1,85 +1,50 @@
-<h2 id="title">Welcome to Ember</h2>
+<p>Search for SA and select SA 1010 (or 1008) and watch the model be populated with the correct value and the trigger for power-select-with-create does <strong>NOT</strong> show the value (but will show on the regular power-select)</p>
+<h2>Does not work (power-select-with-create)</h2>
+<pre>
+      searchEnabled=true
+      allowClear=false
+      selected=baseMaterial.specification
+      onchange=(action 'setSpecification')
+      search=(action 'searchSpecification')
+      triggerClass=(concat 'form-control ' cssTriggerClass)
+      oncreate=(action 'createSpecification')
+      showCreateWhen=(action 'showWhenCreateSpec')
+      buildSuggestion=(action 'suggestSpecification')
+</pre>
+{{#power-select-with-create
+      searchEnabled=true
+      allowClear=false
+      selected=baseMaterial.specification
+      onchange=(action 'setSpecification')
+      search=(action 'searchSpecification')
+      triggerClass=(concat 'form-control ' cssTriggerClass)
+      oncreate=(action 'createSpecification')
+      showCreateWhen=(action 'showWhenCreateSpec')
+      buildSuggestion=(action 'suggestSpecification')
+      placeholder='Search for SA and select one of the values, it does not show up in the trigger component'
+as |option|}}
+{{option.specification}}
+{{/power-select-with-create}}
+<h2>Works (regular power-select, same options)</h2>
+<pre>
+      searchEnabled=true
+      allowClear=false
+      selected=baseMaterial.specification
+      onchange=(action 'setSpecification')
+      search=(action 'searchSpecification')
+      as |option|
+</pre>
+{{#power-select
+      searchEnabled=true
+      allowClear=false
+      selected=baseMaterial.specification
+      onchange=(action 'setSpecification')
+      search=(action 'searchSpecification')
+      placeholder='This is a regular power-select and works correctly'
+as |option|}}
+{{option.specification}}
+{{/power-select}}
 
-<h3>Default behaviour</h3>
-{{#power-select-with-create
-    options=countries
-    searchField="name"
-    selected=selectedCountry
-    allowClear=true
-    onchange=(action (mut selectedCountry))
-    oncreate=(action "createCountry") as |country term|
-}}
-  {{country.name}}
-{{/power-select-with-create}}
 
-<br>
-<br>
-<br>
-<h3>Multiple selections via <code>power-select-multiple-with-create</code></h3>
-{{#power-select-multiple-with-create
-    options=countries
-    searchField="name"
-    selected=selectedCountries
-    onchange=(action (mut selectedCountries))
-    oncreate=(action "createCountry") as |country term|
-}}
-  {{country.name}}
-{{/power-select-multiple-with-create}}
-
-<br>
-<br>
-<br>
-<h3>With custom Add message</h3>
-{{#power-select-with-create
-    options=countries
-    searchField="name"
-    selected=selectedCountry
-    allowClear=true
-    onchange=(action (mut selectedCountry))
-    oncreate=(action "createCountry")
-    buildSuggestion=capitalizeSuggestion as |country term|
-}}
-  {{country.name}}
-{{/power-select-with-create}}
-<br>
-<br>
-<br>
-<h3>With options being a slow promise</h3>
-{{#power-select-with-create
-    options=slowPromise
-    searchField="name"
-    selected=selectedCountry
-    allowClear=true
-    onchange=(action (mut selectedCountry))
-    oncreate=(action "createCountry") as |country term|
-}}
-  {{country.name}}
-{{/power-select-with-create}}
-<br>
-<br>
-<br>
-<h3>With async search</h3>
-{{#power-select-with-create
-    search=(action "searchCountries")
-    selected=selectedCountry
-    allowClear=true
-    onchange=(action (mut selectedCountry))
-    oncreate=(action "createCountry") as |country term|
-}}
-  {{country.name}}
-{{/power-select-with-create}}
-<br>
-<br>
-<br>
-<h3>With callback to hide/show create option</h3>
-{{#power-select-with-create
-    options=countries
-    searchField="name"
-    selected=selectedCountry
-    allowClear=true
-    onchange=(action (mut selectedCountry))
-    oncreate=(action "createCountry")
-    showCreateWhen=(action "hideCreateOptionOnSameName") as |country|
-}}
-  {{country.name}}
-{{/power-select-with-create}}
+<h2>Model Content (property = baseMaterial.specification.specification)</h2>
+{{baseMaterial.specification.specification}}

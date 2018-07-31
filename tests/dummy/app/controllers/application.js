@@ -1,58 +1,64 @@
 import { later } from '@ember/runloop';
 import { Promise } from 'rsvp';
 import Controller from '@ember/controller';
-
-const countries = [
-  { name: 'United States',  code: 'US', population: 321853000 },
-  { name: 'Spain',          code: 'ES', population: 46439864 },
-  { name: 'Portugal',       code: 'PT', population: 10374822 },
-  { name: 'Russia',         code: 'RU', population: 146588880 },
-  { name: 'Latvia',         code: 'LV', population: 1978300 },
-  { name: 'Brazil',         code: 'BR', population: 204921000 },
-  { name: 'United Kingdom', code: 'GB', population: 64596752 },
-];
+import { inject as service } from '@ember/service';
+import RSVP from 'rsvp';
 
 export default Controller.extend({
-  countries,
-  slowPromise: null,
+  store: service(),
+  baseMaterial: null,
 
   init() {
     this._super(...arguments);
-    this.set('slowPromise', this.createSlowPromise());
-    this.set('selectedCountries', []);
+    this.set('baseMaterial', this.get('store').createRecord('base-material'));
   },
 
   // Actions
   actions: {
-    createCountry(countryName) {
-      let newCountry = { name: countryName, code: 'XX', population: 'unknown' };
-      this.get('countries').pushObject(newCountry);
-      this.set('selectedCountry', newCountry);
-      this.get('selectedCountries').push(newCountry);
+
+    setSpecification(spec) {
+      this.set('baseMaterial.specification', spec);
+      this.set('specificationsSearched', null);
     },
-    searchCountries(term) {
-      return new Promise((resolve, reject) => {
-        this.createSlowPromise(2000).then((countries) => {
-          resolve(countries.filter((country) => {
-            return country.name.toLowerCase().match(term.toLowerCase());
-          }));
+
+    suggestSpecification(/*term*/) {
+      'Add this';
+    },
+
+    createSpecification(/*term*/) {
+      // Can be empty, does not need to work
+    },
+
+    searchSpecification(/*term*/) {
+      let results = [];
+      results.push(this.get('store').createRecord('base-material-specification', {
+        'specification': 'SA 1008',
+      }));
+      results.push(this.get('store').createRecord('base-material-specification', {
+        'specification': 'SA 1010',
+      }));
+      this.set('results', results);
+      return new RSVP.Promise((resolve, reject) => {
+        this.createSlowPromise(results).then((materials) => {
+          resolve(materials);
         }, reject);
       });
     },
-    hideCreateOptionOnSameName(term) {
-      let existingOption = this.get('countries').findBy('name', term);
-      return !existingOption;
-    },
+
+    showWhenCreateSpec() {
+      let specs = this.get('specificationsSearched');
+      if (specs != null) {
+        if (specs.get('length') === 0) {
+          return true;
+        }
+      }
+      return false;
+    }
   },
 
-  // Methods
-  capitalizeSuggestion(term) {
-    return `Hey! Perhaps you want to create ${term.toUpperCase()}??`;
-  },
-
-  createSlowPromise(time = 5000) {
+  createSlowPromise(results) {
     return new Promise(function(resolve) {
-      later(() => resolve(countries), time);
+      later(() => resolve(results), 100);
     });
   },
 });
